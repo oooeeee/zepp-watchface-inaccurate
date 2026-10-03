@@ -95,12 +95,21 @@ WatchFace({
     this.batteryBar = createBatteryBar()
     this.updateTime()
     this.updateBattery()
+    // The minute tick doesn't run while the face is paused (screen off, AOD,
+    // other screens), so refresh as soon as the face is visible again
+    createWidget(widget.WIDGET_DELEGATE, {
+      resume_call: () => {
+        this.updateTime()
+        this.updateBattery()
+      }
+    })
     // Also covers the date rolling over at midnight
     this.time.onPerMinute(() => this.updateTime())
     this.battery.onChange(this.onBatteryChange)
   },
 
   updateTime() {
+    if (!this.rowSets.length) return
     // Russian on a Russian watch, English otherwise
     const lang = getLanguage() === LANGUAGE_RU ? 'ru' : 'en'
     const texts = [

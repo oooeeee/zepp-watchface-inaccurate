@@ -38,6 +38,11 @@ device check has been flaky.
   widgets in gray `0xa0a0a0`: AOD gray must be above 153 per channel.
 - **No unregister for the minute tick.** `Time.onPerMinute` has no off/unregister
   call; `Battery.onChange` does (`offChange` in `onDestroy`).
+- **Paused faces don't tick.** The minute callback doesn't run while the face is
+  paused (screen off, AOD, other screens), so the normal screen showed stale text
+  after waking. A `WIDGET_DELEGATE` with `resume_call` refreshes everything when
+  the face becomes visible. Keep it. AOD is fresh anyway: entering AOD runs
+  `build()` again.
 - **Rectangles.** `FILL_RECT` / `STROKE_RECT` updates via `prop.MORE` must
   include x, y, w and h together. A `STROKE_RECT` with `line_width: 0` looks like
   a thin outline in the simulator but fills the whole rect on the watch, so keep
